@@ -1,0 +1,32 @@
+<!-- templates/accounts/register_seller.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Become a Seller — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4">
+                        <i class="bi bi-shop"></i> Become a Seller
+                    </h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-warning btn-lg">Register as Seller</button>
+                        </div>
+                    </form>
+                    <hr>
+                    <p class="text-center">Already have an account?
+                        <a href="{% url 'accounts:login' %}">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

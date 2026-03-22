@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Seller Dashboard — {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+
+        <!-- Store Info Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center p-4">
+                    {% if store.logo %}
+                        <img src="{{ store.logo.url }}" class="rounded-circle mb-3"
+                             width="80" height="80" style="object-fit:cover;">
+                    {% else %}
+                        <div class="bg-primary text-white rounded-circle d-inline-flex
+                                    align-items-center justify-content-center mb-3"
+                             style="width:80px;height:80px;font-size:1.8rem;">
+                            {{ store.name|first|upper }}
+                        </div>
+                    {% endif %}
+                    <h5 class="fw-bold">{{ store.name }}</h5>
+                    <p class="text-muted small">{{ store.description|truncatewords:10 }}</p>
+
+                    {% if store.status == 'approved' %}
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle"></i> Approved
+                        </span>
+                    {% elif store.status == 'pending' %}
+                        <span class="badge bg-warning text-dark">
+                            <i class="bi bi-clock"></i> Pending Approval
+                        </span>
+                    {% endif %}
+
+                    <div class="mt-3 d-grid gap-2">
+                        <a href="{% url 'sellers:edit' %}"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Edit Store
+                        </a>
+                        <a href="{% url 'sellers:public_store' store.slug %}"
+                           class="btn btn-outline-secondary btn-sm" target="_blank">
+                            <i class="bi bi-eye"></i> View Store
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="col-md-9">
+            <h4 class="mb-3">
+                Welcome back, {{ request.user.first_name }}!
+                <small class="text-muted fs-6">{{ store.name }}</small>
+            </h4>
+
+            {% if store.status == 'pending' %}
+            <div class="alert alert-warning mb-3">
+                <i class="bi bi-clock"></i>
+                <strong>Store under review.</strong>
+                Approval within 24 hours. You can add products while waiting.
+            </div>
+            {% endif %}
+
+            <!-- Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-4">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <div class="fs-2 fw-bold text-primary">
+                            {{ total_products }}
+                        </div>
+                        <div class="small text-muted">Active Products</div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <div class="fs-2 fw-bold text-warning">
+                            {{ pending_orders }}
+                        </div>
+                        <div class="small text-muted">Pending Orders</div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <div class="fs-2 fw-bold text-success">
+                            ₹{{ total_revenue|floatformat:0 }}
+                        </div>
+                        <div class="small text-muted">Total Revenue</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold mb-3">Quick Actions</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'products:add' %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle"></i> Add Product
+                        </a>
+                        <a href="{% url 'products:seller_products' %}"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-box-seam"></i> My Products
+                        </a>
+                        <a href="{% url 'sellers:orders' %}"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-bag-check"></i> View Orders
+                            {% if pending_orders %}
+                            <span class="badge bg-danger ms-1">{{ pending_orders }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'sellers:edit' %}"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-gear"></i> Store Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0">Recent Orders</h6>
+                        <a href="{% url 'sellers:orders' %}"
+                           class="text-decoration-none small">
+                            View all <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    {% if recent_order_items %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Product</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in recent_order_items %}
+                                <tr>
+                                    <td>
+                                        <small class="fw-bold">
+                                            {{ item.order.order_number }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <small>{{ item.product_name|truncatechars:25 }}</small>
+                                    </td>
+                                    <td>
+                                        <small class="text-primary fw-bold">
+                                            ₹{{ item.subtotal }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge
+                                            {% if item.order.status == 'delivered' %}bg-success
+                                            {% elif item.order.status == 'shipped' %}bg-info
+                                            {% elif item.order.status == 'confirmed' %}bg-primary
+                                            {% elif item.order.status == 'cancelled' %}bg-danger
+                                            {% else %}bg-warning text-dark{% endif %}
+                                            " style="font-size:0.7rem;">
+                                            {{ item.order.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-3">
+                        <i class="bi bi-bag-x"></i> No orders yet
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

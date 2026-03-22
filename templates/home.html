@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopHub — India's Multi-Vendor Marketplace{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero Section ─────────────────────────── -->
+<section class="hero-section text-white py-5"
+         style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="badge bg-warning text-dark mb-3 px-3 py-2">
+                    🛒 Multi-Vendor Marketplace
+                </span>
+                <h1 class="display-4 fw-bold mb-3">
+                    Shop from <span style="color:#f39c12;">thousands</span>
+                    of sellers in one place
+                </h1>
+                <p class="lead text-white-50 mb-4">
+                    Find the best products at the best prices.
+                    From electronics to fashion — all under one roof.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{% url 'products:list' %}" class="btn btn-warning btn-lg px-4 fw-bold">
+                        <i class="bi bi-shop"></i> Shop Now
+                    </a>
+                    <a href="{% url 'accounts:register_seller' %}"
+                       class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-bag-plus"></i> Start Selling
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6 text-center mt-4 mt-lg-0">
+                <!-- Stats -->
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.1);">
+                            <div class="fs-2 fw-bold text-warning">{{ featured_products.count }}+</div>
+                            <div class="small text-white-50">Products</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.1);">
+                            <div class="fs-2 fw-bold text-warning">{{ stores.count }}+</div>
+                            <div class="small text-white-50">Sellers</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.1);">
+                            <div class="fs-2 fw-bold text-warning">{{ categories.count }}+</div>
+                            <div class="small text-white-50">Categories</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Search Bar ────────────────────────────── -->
+<section class="bg-white py-4 shadow-sm">
+    <div class="container">
+        <form method="GET" action="{% url 'products:list' %}">
+            <div class="input-group input-group-lg" style="max-width:700px; margin:auto;">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+                <input type="text" name="q" class="form-control border-start-0 ps-0"
+                       placeholder="Search for products, brands, stores...">
+                <button class="btn btn-primary px-4" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- ── Categories ────────────────────────────── -->
+{% if categories %}
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Shop by Category</h3>
+            <a href="{% url 'products:list' %}" class="text-decoration-none">
+                View all <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="row g-3">
+            {% for category in categories %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'products:list' %}?category={{ category.slug }}"
+                   class="text-decoration-none">
+                    <div class="card border-0 shadow-sm text-center h-100
+                                category-card p-3">
+                        <div class="mb-2" style="font-size:2.5rem;">
+                            {% if category.name == 'Electronics' %}📱
+                            {% elif category.name == 'Clothing' %}👗
+                            {% elif category.name == 'Books' %}📚
+                            {% elif category.name == 'Home & Kitchen' %}🏠
+                            {% elif category.name == 'Sports' %}⚽
+                            {% else %}🛍️
+                            {% endif %}
+                        </div>
+                        <div class="fw-bold text-dark small">{{ category.name }}</div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ── Deals Section ─────────────────────────── -->
+{% if deals %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">
+                <span class="text-danger">🔥</span> Today's Deals
+            </h3>
+            <a href="{% url 'products:list' %}" class="text-decoration-none">
+                See all deals <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="row g-3">
+            {% for product in deals %}
+            <div class="col-6 col-md-3">
+                <div class="card h-100 border-0 shadow-sm product-card">
+                    <a href="{% url 'products:detail' product.slug %}">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top"
+                                 style="height:180px; object-fit:cover;">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center
+                                        justify-content-center" style="height:180px;">
+                                <i class="bi bi-image text-muted" style="font-size:3rem;"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+                    <div class="card-body p-3">
+                        {% if product.discount_percent %}
+                        <span class="badge bg-danger mb-1">-{{ product.discount_percent }}% OFF</span>
+                        {% endif %}
+                        <h6 class="fw-bold mb-1 small">
+                            <a href="{% url 'products:detail' product.slug %}"
+                               class="text-decoration-none text-dark">
+                                {{ product.name|truncatechars:40 }}
+                            </a>
+                        </h6>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold text-primary">₹{{ product.price }}</span>
+                            {% if product.original_price %}
+                            <span class="text-muted text-decoration-line-through small">
+                                ₹{{ product.original_price }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ── Featured Products ──────────────────────── -->
+{% if featured_products %}
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Featured Products</h3>
+            <a href="{% url 'products:list' %}" class="text-decoration-none">
+                View all <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            {% for product in featured_products %}
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm product-card">
+                    <a href="{% url 'products:detail' product.slug %}">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top"
+                                 style="height:200px; object-fit:cover;">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center
+                                        justify-content-center" style="height:200px;">
+                                <i class="bi bi-image text-muted" style="font-size:3rem;"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+                    <div class="card-body p-3">
+                        {% if product.discount_percent %}
+                        <span class="badge bg-danger mb-1">-{{ product.discount_percent }}%</span>
+                        {% endif %}
+                        <h6 class="mb-1">
+                            <a href="{% url 'products:detail' product.slug %}"
+                               class="text-decoration-none text-dark fw-bold">
+                                {{ product.name|truncatechars:45 }}
+                            </a>
+                        </h6>
+                        <small class="text-muted">{{ product.store.name }}</small>
+                        <div class="mt-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold text-primary">₹{{ product.price }}</span>
+                                {% if product.original_price %}
+                                <br>
+                                <small class="text-muted text-decoration-line-through">
+                                    ₹{{ product.original_price }}
+                                </small>
+                                {% endif %}
+                            </div>
+                            {% if not product.is_in_stock %}
+                            <span class="badge bg-secondary small">Out of stock</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ── Active Stores ──────────────────────────── -->
+{% if stores %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <h3 class="fw-bold mb-4">Top Sellers on ShopHub</h3>
+        <div class="row g-3">
+            {% for store in stores %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'sellers:public_store' store.slug %}"
+                   class="text-decoration-none">
+                    <div class="card border-0 shadow-sm text-center p-3 h-100 store-card">
+                        {% if store.logo %}
+                            <img src="{{ store.logo.url }}" width="60" height="60"
+                                 class="rounded-circle mx-auto mb-2"
+                                 style="object-fit:cover;">
+                        {% else %}
+                            <div class="bg-primary text-white rounded-circle mx-auto mb-2
+                                        d-flex align-items-center justify-content-center"
+                                 style="width:60px;height:60px;font-size:1.4rem;">
+                                {{ store.name|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="fw-bold small text-dark">{{ store.name }}</div>
+                        <div class="text-muted" style="font-size:0.75rem;">
+                            {{ store.get_total_products }} products
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ── Sell on ShopHub Banner ─────────────────── -->
+<section class="py-5"
+         style="background: linear-gradient(135deg, #f39c12, #e74c3c);">
+    <div class="container text-center text-white">
+        <h2 class="fw-bold mb-3">Want to sell on ShopHub?</h2>
+        <p class="lead mb-4 opacity-75">
+            Join thousands of sellers. Set up your store in minutes.
+        </p>
+        <a href="{% url 'accounts:register_seller' %}"
+           class="btn btn-light btn-lg px-5 fw-bold text-danger">
+            <i class="bi bi-shop"></i> Start Selling Today
+        </a>
+    </div>
+</section>
+
+{% endblock %}

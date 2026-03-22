@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.order_number }} — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Success banner -->
+    <div class="alert alert-success d-flex align-items-center mb-4">
+        <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+        <div>
+            <strong>Order placed successfully!</strong>
+            Your order <strong>#{{ order.order_number }}</strong> is confirmed.
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Order Items -->
+        <div class="col-lg-7 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Items Ordered</h5>
+                    {% for item in order.items.all %}
+                    <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">{{ item.product_name }}</div>
+                            <small class="text-muted">
+                                Qty: {{ item.quantity }} × ₹{{ item.price_at_purchase }}
+                            </small>
+                        </div>
+                        <div class="fw-bold text-primary">₹{{ item.subtotal }}</div>
+                    </div>
+                    {% endfor %}
+                    <div class="d-flex justify-content-between mt-2">
+                        <span class="fw-bold fs-5">Total</span>
+                        <span class="fw-bold fs-5 text-primary">₹{{ order.total_amount }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Info -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Order Info</h5>
+                    <table class="table table-sm">
+                        <tr>
+                            <td class="text-muted">Order #</td>
+                            <td><strong>{{ order.order_number }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Status</td>
+                            <td>
+                                <span class="badge
+                                    {% if order.status == 'delivered' %}bg-success
+                                    {% elif order.status == 'cancelled' %}bg-danger
+                                    {% elif order.status == 'shipped' %}bg-info
+                                    {% elif order.status == 'confirmed' %}bg-primary
+                                    {% else %}bg-warning text-dark{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Payment</td>
+                            <td>
+                                <span class="badge
+                                    {% if order.payment_status == 'paid' %}bg-success
+                                    {% elif order.payment_status == 'cod' %}bg-warning text-dark
+                                    {% elif order.payment_status == 'failed' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ order.get_payment_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Date</td>
+                            <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Delivery To</h5>
+                    <p class="mb-1"><strong>{{ order.full_name }}</strong></p>
+                    <p class="mb-1 text-muted">{{ order.phone }}</p>
+                    <p class="mb-1 text-muted">{{ order.address }}</p>
+                    <p class="mb-0 text-muted">
+                        {{ order.city }}, {{ order.state }} — {{ order.pincode }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+
+        {% if order.payment_status == 'unpaid' %}
+        <a href="{% url 'payments:payment_page' order.order_number %}"
+           class="btn btn-success btn-lg">
+            <i class="bi bi-credit-card"></i>
+            Pay Now — ₹{{ order.total_amount }}
+        </a>
+        {% endif %}
+
+        {% if order.payment_status == 'cod' %}
+        <span class="btn btn-warning text-dark btn-lg">
+            <i class="bi bi-cash"></i> Cash on Delivery
+        </span>
+        {% endif %}
+
+        {% if order.payment_status == 'paid' %}
+        <span class="btn btn-success btn-lg disabled">
+            <i class="bi bi-check-circle"></i> Paid
+        </span>
+        {% endif %}
+
+        <a href="{% url 'orders:order_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-list-ul"></i> My Orders
+        </a>
+        <a href="{% url 'products:list' %}" class="btn btn-primary">
+            <i class="bi bi-shop"></i> Continue Shopping
+        </a>
+
+    </div>
+
+</div>
+{% endblock %}

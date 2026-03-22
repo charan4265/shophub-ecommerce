@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Products — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Search bar -->
+    <form method="GET" class="mb-4">
+        <div class="input-group input-group-lg" style="max-width:600px; margin:auto;">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Search products..." value="{{ query|default:'' }}">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </div>
+    </form>
+
+    <!-- Category filter pills -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="{% url 'products:list' %}"
+           class="btn btn-sm {% if not selected_category %}btn-dark{% else %}btn-outline-dark{% endif %}">
+            All
+        </a>
+        {% for cat in categories %}
+        <a href="?category={{ cat.slug }}"
+           class="btn btn-sm {% if selected_category == cat.slug %}btn-dark{% else %}btn-outline-dark{% endif %}">
+            {{ cat.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Products grid -->
+    {% if products %}
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+        {% for product in products %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm">
+                <a href="{% url 'products:detail' product.slug %}">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top"
+                             style="height:200px; object-fit:cover;">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="height:200px;">
+                            <i class="bi bi-image text-muted" style="font-size:3rem;"></i>
+                        </div>
+                    {% endif %}
+                </a>
+                <div class="card-body">
+                    {% if product.discount_percent %}
+                    <span class="badge bg-danger mb-1">-{{ product.discount_percent }}%</span>
+                    {% endif %}
+                    <h6 class="card-title mb-1">
+                        <a href="{% url 'products:detail' product.slug %}"
+                           class="text-decoration-none text-dark">
+                            {{ product.name|truncatechars:50 }}
+                        </a>
+                    </h6>
+                    <small class="text-muted">{{ product.store.name }}</small>
+                    <div class="mt-2 d-flex align-items-center justify-content-between">
+                        <div>
+                            <strong class="text-primary fs-5">₹{{ product.price }}</strong>
+                            {% if product.original_price %}
+                            <small class="text-muted text-decoration-line-through ms-1">
+                                ₹{{ product.original_price }}
+                            </small>
+                            {% endif %}
+                        </div>
+                        {% if not product.is_in_stock %}
+                        <span class="badge bg-secondary">Out of stock</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-search" style="font-size:4rem; color:#ccc;"></i>
+        <h4 class="mt-3 text-muted">No products found</h4>
+        <a href="{% url 'products:list' %}" class="btn btn-outline-primary mt-2">
+            Clear filters
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+<!-- templates/partials/navbar.html -->
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand fw-bold fs-4" href="/">
+            <i class="bi bi-shop"></i> ShopHub
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Left links -->
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'products:list' %}">Products</a>
+                </li>
+            </ul>
+
+            <!-- Right links -->
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
+                {% if user.is_authenticated %}
+    <!-- Cart icon — add this -->
+    <li class="nav-item">
+        <a class="nav-link position-relative" href="{% url 'orders:cart' %}">
+            <i class="bi bi-cart3 fs-5"></i>
+            {% if request.user.is_authenticated %}
+                {% with request.user.cart.total_items as count %}
+                    {% if count %}
+                    <span class="position-absolute top-0 start-100 translate-middle
+                                 badge rounded-pill bg-danger" style="font-size:0.65rem;">
+                        {{ count }}
+                    </span>
+                    {% endif %}
+                {% endwith %}
+            {% endif %}
+        </a>
+    </li>
+                    {% if user.is_seller %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'sellers:dashboard' %}">
+                            <i class="bi bi-speedometer2"></i> My Store
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:profile' %}">
+                            <i class="bi bi-person-circle"></i> {{ user.first_name }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm" href="{% url 'accounts:logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary btn-sm" href="{% url 'accounts:register_buyer' %}">Sign Up</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

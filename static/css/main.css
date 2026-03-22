@@ -1,0 +1,52 @@
+/* static/css/main.css */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* ── Cards hover effect ── */
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12) !important;
+}
+
+.category-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px !important;
+    cursor: pointer;
+}
+.category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1) !important;
+    background-color: #f0f4ff !important;
+}
+
+.store-card {
+    transition: transform 0.2s ease;
+    border-radius: 12px !important;
+}
+.store-card:hover {
+    transform: translateY(-3px);
+}
+
+/* ── Navbar ── */
+.navbar-brand {
+    font-size: 1.4rem;
+    letter-spacing: 0.3px;
+}
+
+/* ── Buttons ── */
+.btn {
+    border-radius: 8px;
+}
+
+/* ── Hero section ── */
+.hero-section {
+    min-height: 380px;
+}

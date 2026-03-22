@@ -1,0 +1,35 @@
+<!-- templates/accounts/login.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                        </div>
+                    </form>
+                    <hr>
+                    <p class="text-center mb-1">New here?
+                        <a href="{% url 'accounts:register_buyer' %}">Create a buyer account</a>
+                    </p>
+                    <p class="text-center">Want to sell?
+                        <a href="{% url 'accounts:register_seller' %}">Register as seller</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
