@@ -4,6 +4,5 @@ __pycache__/
 *.pyo
 .env
 media/
-staticfiles/
 db.sqlite3
 *.log
