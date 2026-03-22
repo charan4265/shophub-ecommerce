@@ -5,19 +5,28 @@ pip install -r requirements.txt
 python manage.py collectstatic --noinput
 python manage.py migrate
 
-# Create superuser automatically if not exists
 python manage.py shell << 'EOF'
 from accounts.models import User
-if not User.objects.filter(email='codertechmind@gmail.com').exists():
+
+# Create admin if not exists, or promote existing user
+email = 'codertechmind@gmail.com'
+
+if User.objects.filter(email=email).exists():
+    u = User.objects.get(email=email)
+    u.is_staff = True
+    u.is_superuser = True
+    u.role = 'admin'
+    u.set_password('Charan@123')
+    u.save()
+    print(f'User {email} promoted to admin!')
+else:
     u = User.objects.create_superuser(
-        email='codertechmind@gmail.com',
+        email=email,
         password='Charan@123',
         first_name='Charan',
         last_name='Thota'
     )
     u.role = 'admin'
     u.save()
-    print('Admin created!')
-else:
-    print('Admin already exists.')
+    print(f'Admin {email} created!')
 EOF
