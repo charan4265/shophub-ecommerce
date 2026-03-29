@@ -25,6 +25,12 @@
             <!-- Right links -->
             <ul class="navbar-nav ms-auto align-items-center gap-2">
                 {% if user.is_authenticated %}
+                <li class="nav-item">
+                        <a class="nav-link" href="{% url 'orders:order_list' %}">
+                            <i class="bi bi-bag"></i> My Orders
+                        </a>
+                    </li>
+
     <!-- Cart icon — add this -->
     <li class="nav-item">
         <a class="nav-link position-relative" href="{% url 'orders:cart' %}">
