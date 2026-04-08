@@ -120,7 +120,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL  = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
   # ── Cloudinary Image Storage ──────────────────
-import cloudinary
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
